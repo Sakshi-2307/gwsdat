@@ -60,3 +60,4 @@ Inside the Shiny app, a data analysis session can be saved inside the Analysis p
 GWSDAT::launchApp(session_file = "path_to_file.rds")
 ``` 
 
+# gwsdat
