@@ -14,7 +14,7 @@ License: GPL-3
 Depends: 
     R (>= 3.2.2)
 Imports: 
-    inst,
+    deldir,
     digest,
     geometry,
     Kendall,

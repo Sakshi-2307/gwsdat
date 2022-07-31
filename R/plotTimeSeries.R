@@ -22,8 +22,9 @@ plotTimeSeries <- function(csite,
   
   Use.LogScale = csite$ui_attr$ts_options["Log Conc. Scale"]
   
-  Well.Data <- csite$All.Data$Cont.Data[as.character(csite$All.Data$Cont.Data$WellName) == location & csite$All.Data$Cont.Data$Constituent == substance,]
+  Well.Data <- csite$All.Data$Cont.Data[as.character(csite$All.Data$Cont.Data$WellName) %in% location & csite$All.Data$Cont.Data$Constituent %in% substance,]
   
+  # print(Well.Data)  
   
   if (csite$ui_attr$conc_unit_selected == "mg/l") { Well.Data$Result.Corr.ND <- Well.Data$Result.Corr.ND/1000 }
   if (csite$ui_attr$conc_unit_selected == "ng/l") { Well.Data$Result.Corr.ND <- Well.Data$Result.Corr.ND*1000 }

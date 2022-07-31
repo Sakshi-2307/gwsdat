@@ -41,22 +41,16 @@ launchApp <- function(GWSDAT_Options, session_file) {
   if (missing(GWSDAT_Options) && missing(session_file)) {
     
     .GlobalEnv$APP_RUN_MODE <- "MultiData"
+    .GlobalEnv$APP_LOGIN_MODE <- TRUE
     
-    shinyApp(ui = uiFull(), server = server)
+    opts <- list(port=8888, host='0.0.0.0')
+    shinyApp(ui = uiFull(), server = server, options = opts)
     
   } else {
     
     .GlobalEnv$APP_RUN_MODE <- "SingleData"
     
-    if(interactive()) {
-  launchApp(session_file = "/Users/sakshiprasad/Downloads/GWSDAT Online Input Data sets/GWSDAT Basic Example.rds") # launch in single data mode.
-  launchApp() 
-  }
-
-  
-
-
-
+    
     if (!missing(session_file)) {
       .GlobalEnv$session_file <- normalizePath(session_file)
     } else {
@@ -65,7 +59,7 @@ launchApp <- function(GWSDAT_Options, session_file) {
     
     options(shiny.launch.browser = TRUE)
     
-    shinyApp(ui = uiSimple(), server = server)
+    shinyApp(ui = uiSimple(), server = server, port=8888)
   }
   
 }

@@ -5,10 +5,10 @@ uiTimeSeries <- function(csite, img_frmt) {
     shinydashboard::box(width = 3, status = "warning", title = "Settings",
                         
                         selectInput("sample_loc_select_ts", label = "Select Monitoring Well", choices = csite$ui_attr$sample_loc_names,
-                                    selected = csite$ui_attr$sample_loc_select_ts, width = "80%"),
+                                    selected = csite$ui_attr$sample_loc_select_ts, width = "80%", multiple=TRUE),
                         
                         selectInput("solute_select_ts", label = "Substance", choices = csite$ui_attr$solute_names,
-                                    selected = csite$ui_attr$solute_select_ts, width = '80%'),
+                                    selected = csite$ui_attr$solute_select_ts, width = '80%', multiple=TRUE),
                         
                         radioButtons("solute_conc", label = "Solute Conc. Unit",
                                      choices = csite$ui_attr$conc_unit_list, 
@@ -37,7 +37,37 @@ uiTimeSeries <- function(csite, img_frmt) {
                             downloadButton("save_timeseries_plot", label = "Save Plot")
                         )
                         
-    )
-  )
-
+    ),
+    
+	# This draggable panel contains the time slider for the spatial heatmap plot.s
+	#print(csite$ui_attr$timepoints),
+    absolutePanel(id = "timecontrol_tp", class = "panel panel-default", 
+                  fixed = TRUE, draggable = TRUE, top = "auto", 
+                  left = "auto", right = 20, bottom = 20,
+                  width = 350, height = 140,  
+                  
+                  div(style = "margin-left: 15px; margin-top: 5px",
+                      h4(textOutput("timepoint_sp_idx_label")),
+                      sliderInput("timepoint_tp_idx",
+                                  label="",
+                                  #label = paste0("Time: ", pasteAggLimit(csite$ui_attr$timepoints[csite$ui_attr$timepoint_sp_idx], csite$GWSDAT_Options$Aggby)),
+                                  min = 1,
+                                  max = length(csite$ui_attr$timepoints),
+                                  step = 1,
+                                  value = csite$ui_attr$timepoint_sp_idx,
+                                  animate = animationOptions(loop = TRUE, interval = 1500)
+                      ) # ,
+                      
+                      # This worked nice for passing a vector of dates to values.
+                      # However, update does not work and grid is messed up with too many values.
+                      #
+                      #sliderValues(
+                      #  inputId = "timepoint_sp", label = "Time Point", width = "95%",
+                      #  values = csite$ui_attr$timepoints, 
+                      #  from = csite$ui_attr$timepoint_sp,
+                      #  grid = if (length(csite$ui_attr$timepoints) < 20) {TRUE} else {FALSE},
+                      #  animate = animationOptions(interval = 1500, loop = TRUE)
+                  )
+				)
+	)
 }

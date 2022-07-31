@@ -5,7 +5,7 @@ server <- function(input, output, session) {
   
   time.log <- ''
   
-  DEBUG_MODE <- FALSE
+  DEBUG_MODE <- TRUE
  
   # Increase upload file size to 30MB (default: 5MB)
   options(shiny.maxRequestSize = 30*1024^2)
@@ -104,7 +104,7 @@ server <- function(input, output, session) {
   ## Login Logout ###############################################################
   
   user_id <- reactiveValues(id = -1, authenticated = FALSE, file = "")
-  users_dbPath <- 'users.db'
+  users_dbPath <- '/tmp/gwsdat/users.db'
   
   output$wrongPasswordMsg1 <- renderText({''})
   output$wrongPasswordMsg2 <- renderText({''})

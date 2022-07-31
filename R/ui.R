@@ -19,7 +19,7 @@ createLogoCSS <- function() {
 }
 
 
-dbHeaderFull <- function() shinydashboard::dashboardHeader(title = "GWSDAT", 
+dbHeaderFull <- function() shinydashboard::dashboardHeader(title = "GWSDAT BP", 
                                                 shinydashboard::dropdownMenuOutput("welcomeMsg"), 
                                                 shinydashboard::dropdownMenuOutput("logAction"),
                                                 shinydashboard::dropdownMenuOutput("signupAction"))
