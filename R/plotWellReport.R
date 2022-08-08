@@ -1,7 +1,7 @@
 
 
 plotWellReport <- function(csite, Conts.to.plot = NULL, Wells.to.Plot = NULL,  
-                             UseLogScale = FALSE){
+                             UseLogScale = FALSE, export=FALSE){
   
   on.exit(palette("default"))
   
@@ -16,6 +16,10 @@ plotWellReport <- function(csite, Conts.to.plot = NULL, Wells.to.Plot = NULL,
     return()
   }
   
+  if (export==TRUE) {
+	  print('saving to csv...')
+	  return(Cont.Data)
+  }
   
   Cont.Data$WellName <- factor(as.character(Cont.Data$WellName), levels = sort(Wells.to.Plot))
   Cont.Data <- Cont.Data[order(Cont.Data$SampleDate),]
@@ -151,11 +155,8 @@ GWSDAT.xyplotWells <- function(csite, Cont.Data, SiteName = "", sm.fit=TRUE, Use
                     paste(Cont," at ",SiteName,": Aquifer-", csite$Aquifer, sep = "")},
                   drop.unused.levels = FALSE, key = my.key) 
   
-  return(my.plot)
-  
-  
-  
-}
+return(my.plot)
+ }
 
 
 ################### All Wells all Conts #########################################

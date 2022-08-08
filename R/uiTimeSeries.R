@@ -41,20 +41,22 @@ uiTimeSeries <- function(csite, img_frmt) {
     
 	# This draggable panel contains the time slider for the spatial heatmap plot.s
 	#print(csite$ui_attr$timepoints),
-    absolutePanel(id = "timecontrol_tp", class = "panel panel-default", 
+    absolutePanel(id = "timecontrol_ts", class = "panel panel-default", 
                   fixed = TRUE, draggable = TRUE, top = "auto", 
                   left = "auto", right = 20, bottom = 20,
                   width = 350, height = 140,  
                   
                   div(style = "margin-left: 15px; margin-top: 5px",
-                      h4(textOutput("timepoint_sp_idx_label")),
-                      sliderInput("timepoint_tp_idx",
+                      h4(textOutput("timepoint_ts_idx_label")),
+                      sliderInput("timepoint_ts_idx",
                                   label="",
                                   #label = paste0("Time: ", pasteAggLimit(csite$ui_attr$timepoints[csite$ui_attr$timepoint_sp_idx], csite$GWSDAT_Options$Aggby)),
                                   min = 1,
                                   max = length(csite$ui_attr$timepoints),
+                                  #max=10,
                                   step = 1,
                                   value = csite$ui_attr$timepoint_sp_idx,
+                                  #value = length(csite$ui_attr$timepoints),
                                   animate = animationOptions(loop = TRUE, interval = 1500)
                       ) # ,
                       

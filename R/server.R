@@ -74,7 +74,7 @@ server <- function(input, output, session) {
   renderRHandsonWell <- reactiveVal(0)
   
   # Define supported image formats for saving plots.
-  img_frmt <- list("png", "jpg", "pdf", "ps", "pptx","tif")
+  img_frmt <- list("png", "jpg", "pdf", "ps", "pptx", "tif", "csv")
         
   # Remove pptx (powerpoint) if no support was found. 
   if (!existsPPT())
@@ -426,7 +426,7 @@ server <- function(input, output, session) {
   })
   
   observeEvent(input$solute_select_sp, {
-    updateSelectInput(session, "solute_select_ts", selected = input$solute_select_sp )
+    #updateSelectInput(session, "solute_select_ts", selected = input$solute_select_sp )
     tr<-as.numeric(csite$ui_attr$plume_thresh[as.character(input$solute_select_sp)])
     updateNumericInput(session,"plume_thresh_pd",value=tr)
     
@@ -443,13 +443,12 @@ server <- function(input, output, session) {
     if (DEBUG_MODE)
       cat("* in time_series <- renderPlot()\n")
   
-    optionsSaved()
+    #optionsSaved()
     
     # Update control attributes from reactive variables. 
     csite$ui_attr$conc_unit_selected <<- input$solute_conc
     csite$ui_attr$ts_options[1:length(csite$ui_attr$ts_options)] <<- FALSE
     csite$ui_attr$ts_options[input$ts_true_options] <<- TRUE
-    
     
     plotTimeSeries(csite, input$solute_select_ts, input$sample_loc_select_ts, input$check_threshold)
     
@@ -794,6 +793,11 @@ server <- function(input, output, session) {
     updateSliderInput(session, "timepoint_tt_idx", value = new_timepoint_idx,
                       #min = 1, max = length(csite$ui_attr$timepoints), label = paste0("Time: ", outp), step = 1)
                       min = 1, max = length(csite$ui_attr$timepoints), label = "", step = 1)    
+
+    updateSliderInput(session, "timepoint_ts_idx", value = new_timepoint_idx,
+                      #min = 1, max = length(csite$ui_attr$timepoints), label = paste0("Time: ", outp), step = 1)
+                      min = 1, max = length(csite$ui_attr$timepoints), label = "", step = 1)    
+    
     
     
     # Update select input: Aggregation in other panel.
@@ -824,6 +828,13 @@ server <- function(input, output, session) {
     outp <- pasteAggLimit(timep, csite$GWSDAT_Options$Aggby)
     paste0("Time: ", outp)
  })
+
+ output$timepoint_ts_idx_label <- renderText({
+    timep <- csite$ui_attr$timepoints[input$timepoint_ts_idx]
+    outp <- pasteAggLimit(timep, csite$GWSDAT_Options$Aggby)
+    paste0("Time: ", outp)
+ })
+
 
  # observeEvent(input$timepoint_tt_idx, {
  #   # cat("* in observeEvent: timepoint_tt_idx\n")
@@ -1176,21 +1187,19 @@ server <- function(input, output, session) {
                        width  = input$img_width_px_wide, height = input$img_height_px_wide)
         
         
-      } else {
-        
+      } else if (input$export_format_wr == "csv")  write.csv(plotWellReport(csite, input$solute_select_wr, input$sample_loc_select_wr, use_log_scale, export=TRUE), file)
+
+      else {
         if (input$export_format_wr == "png") png(file, width = input$img_width_px_wide, height = input$img_height_px_wide)
         if (input$export_format_wr == "pdf") pdf(file, width = input$img_width_px_wide / csite$ui_attr$img_ppi, height = input$img_height_px_wide / csite$ui_attr$img_ppi) 
         if (input$export_format_wr == "ps") postscript(file, width = input$img_width_px_wide / csite$ui_attr$img_ppi, height = input$img_height_px_wide / csite$ui_attr$img_ppi) 
         if (input$export_format_wr == "jpg") jpeg(file, width = input$img_width_px_wide, height = input$img_height_px_wide, quality = input$img_jpg_quality) 
-        
         plotWellReport(csite, input$solute_select_wr, input$sample_loc_select_wr, use_log_scale)
-
         
         dev.off()
       }
-      
     }
-  )
+    )
   
   
   output$save_plumestats_plot <- downloadHandler(

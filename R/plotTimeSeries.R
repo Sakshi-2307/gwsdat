@@ -1,8 +1,3 @@
-
-
-
-
-
 # Display concentration time-series for contaminant at specific well.
 #
 # @param csite monitoring site object.
@@ -12,6 +7,7 @@
 # 
 #
 #' @importFrom sm sm.regression
+
 plotTimeSeries <- function(csite, 
                            substance = NULL, 
                            location = NULL,
@@ -19,13 +15,28 @@ plotTimeSeries <- function(csite,
                            ) {
   
   showvline = FALSE
+  op <- par(mfrow = c(length(substance),length(location)))
   
   Use.LogScale = csite$ui_attr$ts_options["Log Conc. Scale"]
+
+  loc <- location
+  subs <- substance
+  print(loc)
+  print(subs)
+
+  for (substance  in subs) {
+	  print(substance)
+	  for (location in loc) { 
+
+  #op <- par(new=TRUE)
+
+  Well.Data <- csite$All.Data$Cont.Data[as.character(csite$All.Data$Cont.Data$WellName) %in% location & 
+  csite$All.Data$Cont.Data$Constituent %in% substance,]
   
-  Well.Data <- csite$All.Data$Cont.Data[as.character(csite$All.Data$Cont.Data$WellName) %in% location & csite$All.Data$Cont.Data$Constituent %in% substance,]
-  
-  # print(Well.Data)  
-  
+  #print(location)
+  #print(substance)
+  #print(Well.Data)  
+
   if (csite$ui_attr$conc_unit_selected == "mg/l") { Well.Data$Result.Corr.ND <- Well.Data$Result.Corr.ND/1000 }
   if (csite$ui_attr$conc_unit_selected == "ng/l") { Well.Data$Result.Corr.ND <- Well.Data$Result.Corr.ND*1000 }
   
@@ -56,25 +67,13 @@ plotTimeSeries <- function(csite,
   if (NAPLAxis | GWAxis) {
     
     if (NAPLAxis && GWAxis) {
-      
       op <- par(mar = c(5.1,4.1,4.1,5.1 + tempinc))
-      
     }else{
-      
       op <- par(mar = c(5.1,4.1,4.1,3.1 + tempinc))
     }
-    
-    
   }else{
-    
-    
     op<-par(mar=c(5.1,4.1,4.1,2.15+tempinc))
-    
   }
-  
-  
-  
-  
   
   if (csite$ui_attr$ts_options["Scale to Conc. Data"] & nrow(Well.Data) > 0) {
     
@@ -90,19 +89,26 @@ plotTimeSeries <- function(csite,
   
     }
   
-  
-  sm.fit <- NULL
+  #sm.fit <- NULL
   #tryCatch(
+############################################################### ggplot #################################################
+#    require(ggplot2)
+#    # print(is.data.frame(Well.Data))
+#    g <- ggplot(Well.Data)
+#    g <- g + geom_point(aes(AggDate, Result.Corr.ND, colour=WellName))
+#
+########################################### addinng multiple locations ######################################
+#  for (loc in location) {
+
+  sm.fit <- NULL
   sm.h <- csite$Traffic.Lights$h[location, substance]
-  #error = function(e) {
-  #  browser()
-  #})
-  
   
   if (csite$ui_attr$ts_options["Conc. Trend Smoother"] & !is.na(sm.h)) {
     
-    
     my.eval.points <- seq(range(Well.Data$SampleDate)[1],range(Well.Data$SampleDate)[2],length=40)
+    #my.eval.points <- Well.Data$SampleDate
+    #print(sm.h)
+    #print(Well.Data)
     sm.fit <- sm::sm.regression(Well.Data$SampleDate, log(Well.Data$Result.Corr.ND), display = "none",h=sm.h,eval.points = my.eval.points)
     
     if(!inherits(sm.fit, "try-error")){
@@ -119,14 +125,18 @@ plotTimeSeries <- function(csite,
       sm.95up      <-exp(sm.fit$estimate+2*sm.fit$se)
       sm.95low     <-exp(sm.fit$estimate-2*sm.fit$se)
       
-      
       if(!csite$ui_attr$ts_options["Scale to Conc. Data"]){
         
         my.ylim<-c(min(my.ylim[1],sm.95low,na.rm=T),max(my.ylim[2],sm.95up,na.rm=T))
         if(!is.finite(my.ylim[2])){my.ylim[2]<-100000}
       }
     }
-  }
+  } 
+#  g <- g + geom_line(aes(my.eval.points,sm.est, colour=WellName))
+#  g <- g + geom_line(aes(my.eval.points,sm.95up ,colour=WellName), linetype=2)
+#  g <- g + geom_line(aes(my.eval.points,sm.95low, colour=WellName), linetype=2)
+#  }
+#return(g)
   
   
   if (csite$ui_attr$ts_options["Conc. Linear Trend Fit"] & sum(Det.Pts) > 0 & substance != " ") {
@@ -166,12 +176,16 @@ plotTimeSeries <- function(csite,
     if (csite$ui_attr$ts_options["Show Legend"]) { 
       my.ylim[2] <- 10^(log(my.ylim[1], base = 10) + 1.15 * log(my.ylim[2]/my.ylim[1],base = 10))
     }# make space for Key!
-    
+   
+    #print(Result.Corr.ND)
+    #print(SampleDate)
+    #print(Well.Data)
+
     plot(Result.Corr.ND ~ SampleDate, Well.Data, 
          xlab = "Date",
          ylab = if (substance != " ") {paste(substance, " (", csite$ui_attr$conc_unit_selected, ")", sep = "")} else {""},
-         ylim = my.ylim, 
-         xlim = my.xlim, 
+         #ylim = my.ylim, 
+         #xlim = my.xlim, 
          log  = "y", 
          cex.lab  = 1, 
          cex.main = 1, 
@@ -187,8 +201,8 @@ plotTimeSeries <- function(csite,
     plot(Result.Corr.ND ~ SampleDate, Well.Data,
          xlab = "Date",
          ylab = if (substance != " ") {paste(substance," (", csite$ui_attr$conc_unit_selected, ")", sep="")} else {""},
-         ylim = my.ylim,
-         xlim = my.xlim,
+         #ylim = my.ylim,
+         #xlim = my.xlim,
          cex.lab  = 1,
          cex.main = 1,
          axes     = FALSE)
@@ -198,17 +212,17 @@ plotTimeSeries <- function(csite,
   
   
   #axis.Date(1, my.xlim)
-  axis.Date(1, seq(my.xlim[1],my.xlim[2],l=10))
+#  axis.Date(1, seq(my.xlim[1],my.xlim[2],l=10))
   
-  if (nrow(csite$All.Data$Cont.Data[as.character(csite$All.Data$Cont.Data$Result) != "NAPL" & !is.na(csite$All.Data$Cont.Data$Result),]) != 0) {axis(2)} #if no Conc Data suppress Y-axis
-  graphics::box()	
-  title(main = paste(substance, if (substance != " ") {"in"}else{""}, location,if (csite$Aquifer != "") {paste(": Aquifer-", csite$Aquifer, sep = "")} else {""}), font.main = 4, cex.main = 1)
+#  if (nrow(csite$All.Data$Cont.Data[as.character(csite$All.Data$Cont.Data$Result) != "NAPL" & !is.na(csite$All.Data$Cont.Data$Result),]) != 0) {axis(2)} #if no Conc Data suppress Y-axis
+#  graphics::box()	
+#  title(main = paste(substance, if (substance != " ") {"in"}else{""}, location,if (csite$Aquifer != "") {paste(": Aquifer-", csite$Aquifer, sep = "")} else {""}), font.main = 4, cex.main = 1)
   
   
-  grid(NA,NULL,lwd = 1,lty = 1,equilogs = FALSE)
+#  grid(NA,NULL,lwd = 1,lty = 1,equilogs = FALSE)
   
   abline(v = as.Date(c(paste(1990:2030,c("-01-01"), sep = ""),paste(1990:2030,c("-06-30"),sep=""))),lwd=1,lty=1,col = "lightgray")
-  #if (length(grep("Threshold",csite$ui_attr$trend_thresh_selected)) > 0) {if(!is.na(Stat.Lim)){abline(h=Stat.Lim,col="red",lty=2,lwd=3)}}
+  if (length(grep("Threshold",csite$ui_attr$trend_thresh_selected)) > 0) {if(!is.na(Stat.Lim)){abline(h=Stat.Lim,col="red",lty=2,lwd=3)}}
   if (show_thresh && !is.na(Stat.Lim)) abline(h = Stat.Lim, col = "red", lty = 2, lwd = 3)
     
   
@@ -240,21 +254,15 @@ plotTimeSeries <- function(csite,
                  pt.cex=c(1.2,1.2,1.2)[choose.vec[1:3]],
                  col=c("black","orange","red")[choose.vec[1:3]],
                  horiz = F,cex=.5,ncol=min(3,ceiling(sum(choose.vec)/2))))
-      
     }
-    
   }
-  
-  
-  
-  
   
   if (showvline) {abline(v = csite$All.Data$All_Agg_Dates[csite$jjj],col = "grey",lwd = 3)}
   points(Result.Corr.ND~SampleDate,Well.Data[Det.Pts,],cex = 1.5,pch = 19,col = "black")
   points(Result.Corr.ND~SampleDate,Well.Data[ND.Pts, ],cex = 1.5,pch = 19,col = "orange")
   if (NAPL.Present) {points(Result.Corr.ND~SampleDate,Well.Data[tolower(as.character(Well.Data$Result)) == "napl", ],cex = 1.5,pch = 19,col = "red")}
   
-  
+  #print(csite$ui_attr$ts_options["Conc. Trend Smoother"])
   if (csite$ui_attr$ts_options["Conc. Trend Smoother"] & !inherits(sm.fit, "try-error") & !is.null(sm.fit)) {
     
     try(lines(my.eval.points,sm.est.keep,col = "grey",lwd = 2))#15Sep
@@ -267,7 +275,7 @@ plotTimeSeries <- function(csite,
     
   }
   
-  
+  #print(csite$ui_attr$ts_options["Conc. Linear Trend Fit"])
   if (csite$ui_attr$ts_options["Conc. Linear Trend Fit"] & sum(Det.Pts) > 1 & !inherits(lm.fit, "try-error") & substance != " ") {
     
     
@@ -305,6 +313,7 @@ plotTimeSeries <- function(csite,
   
   GWInc <- FALSE
   
+  #print(csite$ui_attr$ts_options["Overlay GW levels"])
   if (csite$ui_attr$ts_options["Overlay GW levels"]) {
     
     Well.GW.Data<-csite$All.Data$GW.Data[as.character(csite$All.Data$GW.Data$WellName)==location,]
@@ -320,11 +329,10 @@ plotTimeSeries <- function(csite,
       mtext(paste("Groundwater Elevation (",csite$All.Data$GW.Units,")",sep=""), side=4,line=0.75,cex=.7,col="black")
       GWInc<-TRUE
     }
-    
-  }
+ }
   
 
-  
+  #print(show_napl_thickness)
   if (show_napl_thickness & !is.null(csite$All.Data$NAPL.Thickness.Data)) {
     
     Well.NAPL.Thickness.Data <- csite$All.Data$NAPL.Thickness.Data[as.character(csite$All.Data$NAPL.Thickness.Data$WellName) == location,]
@@ -353,12 +361,10 @@ plotTimeSeries <- function(csite,
       mtext(paste("NAPL Thickness (",csite$All.Data$NAPL.Units,")",sep=""), side=4,line=2.75,cex=.7,col="black")
       
     }
-    
-    
   }
-  
-  par(op)
-  
+  }
+  }
+  #par(op) 
 }
 
 

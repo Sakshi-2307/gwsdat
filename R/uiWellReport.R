@@ -27,7 +27,7 @@ uiWellReport <- function(csite, img_frmt) {
           plotOutput("well_report_plot", height = 600),  
           
           div(style = "display: inline-block;",
-              selectInput("export_format_wr", label = "Image format", 
+              selectInput("export_format_wr", label = "Export format", 
                           choices = img_frmt, 
                           selected = img_frmt[[1]]
               )
