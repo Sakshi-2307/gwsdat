@@ -57,6 +57,8 @@ calcTrafficLights <- function(All.Data, Fitted.Data, smThreshSe = 1.1512, smMeth
     invisible(list(eval.points = eval.points, estimate = est))
         
   }
+
+  
   
 
   #' @importFrom sm sm.regression

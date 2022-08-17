@@ -1,7 +1,4 @@
-
-
-
-plotSpatialImage <- function(csite, substance, timepoint = NULL, app_log = NULL,UseReducedWellSet,sample_Omitted_Wells) {
+plotSpatialImage <- function(csite, substance, timepoint = NULL, app_log = NULL,UseReducedWellSet,sample_Omitted_Wells, export = FALSE) {
   print("* in plotSpatialImage()")
   
   if (is.null(timepoint) || class(timepoint) != "Date")
@@ -30,6 +27,8 @@ plotSpatialImage <- function(csite, substance, timepoint = NULL, app_log = NULL,
                                 csite$ui_attr$plume_thresh[substance], 
                                 csite$ui_attr$ground_porosity,UseReducedWellSet)
   }
+
+  if (export == TRUE) return(plume_stats)
   
   plotSpatialImage_main(csite, substance, timepoint, interp.pred, plume_stats,UseReducedWellSet,sample_Omitted_Wells)
 }

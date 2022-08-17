@@ -10,8 +10,7 @@ options(warn = 1)
 #' includes a data manager and several data import facilities. If the parameter \code{session_file}
 #' was specified, the application launches in single data mode, which is limited to the 
 #' analysis of the data specified by \code{session_file}. 
-#' 
-#'
+#
 #' @param GWSDAT_Options A list of start options created with \code{\link{createOptions}}.
 #' @param session_file   Path to .rds file containing a GWSDAT analysis session.
 #'
@@ -43,7 +42,7 @@ launchApp <- function(GWSDAT_Options, session_file) {
     .GlobalEnv$APP_RUN_MODE <- "MultiData"
     .GlobalEnv$APP_LOGIN_MODE <- TRUE
     
-    opts <- list(port=8888, host='0.0.0.0', shiny.fullstacktrace = TRUE) #, shiny.reactlog = TRUE , display.mode='showcase', shiny.error = browser)
+    opts <- list(port=80, host='0.0.0.0', shiny.fullstacktrace = TRUE) #, shiny.reactlog = TRUE , display.mode='showcase', shiny.error = browser)
     shinyApp(ui = uiFull(), server = server, options = opts)
     
   } else {

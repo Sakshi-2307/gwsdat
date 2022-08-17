@@ -34,7 +34,7 @@ uiTimeSeries <- function(csite, img_frmt) {
                         ),
                         
                         div(style = "display: inline-block; vertical-align:top; margin-top: 25px; margin-right: 10px", 
-                            downloadButton("save_timeseries_plot", label = "Save Plot")
+                            downloadButton("save_timeseries_plot", label = "Export")
                         )
                         
     ),

@@ -1,11 +1,24 @@
-
-
-
 server <- function(input, output, session) {
   
   time.log <- ''
   
-  DEBUG_MODE <- TRUE
+    DEBUG_MODE <- TRUE
+
+
+  observe({
+    x <- input$ts_true_options
+
+    # Can use character(0) to remove all choices
+    if (is.null(x))
+      x <- character(0)
+
+    # Can also set the label and select items
+    updateCheckboxGroupInput(session, "ts_true_options2",
+      label = "Selected analyse options from Time Series Plot",
+      choices = x,
+      selected = x
+    )
+  })
  
   # Increase upload file size to 30MB (default: 5MB)
   options(shiny.maxRequestSize = 30*1024^2)
@@ -979,7 +992,7 @@ server <- function(input, output, session) {
                          choices = names(csite$ui_attr$ts_options),
                          selected = names(which(csite$ui_attr$ts_options == TRUE)))
       
-      csite$ui_attr$napl_present <<- tmp_napl
+        csite$ui_attr$napl_present <<- tmp_napl
     }
   }
   
@@ -1081,7 +1094,10 @@ server <- function(input, output, session) {
         makeTimeSeriesPPT(csite, file, input$solute_select_ts, input$sample_loc_select_ts,
                           width  = input$img_width_px, height = input$img_height_px)
         
-      } 
+      }
+
+      else if (input$export_format_ts == "csv")  write.csv(plotTimeSeries(csite, input$solute_select_ts, input$sample_loc_select_ts, export=TRUE), file)
+
       else {
         
         if (input$export_format_ts == "png") png(file, width = input$img_width_px, height = input$img_height_px)
@@ -1110,7 +1126,11 @@ server <- function(input, output, session) {
         plotSpatialImagePPT(csite, file, input$solute_select_sp, as.Date(csite$ui_attr$timepoints[input$timepoint_sp_idx], "%d-%m-%Y"),
                        width  = input$img_width_px, height = input$img_height_px,UseReducedWellSet=input$ImplementReducedWellSet,sample_Omitted_Wells=input$sample_Omitted_Wells)
       
-        } else if (input$export_format_sp == "tif"){
+      }
+
+      else if (input$export_format_sp == "csv")  write.csv(plotSpatialImage(csite, input$solute_select_sp, as.Date(csite$ui_attr$timepoints[input$timepoint_sp_idx], "%d-%m-%Y"),UseReducedWellSet=input$ImplementReducedWellSet,sample_Omitted_Wells=input$sample_Omitted_Wells, export=TRUE), file)
+        
+      else if (input$export_format_sp == "tif"){
          
           
           PlotSpatialImageTIF(csite, file, input$solute_select_sp, as.Date(csite$ui_attr$timepoints[input$timepoint_sp_idx], "%d-%m-%Y"),UseReducedWellSet=input$ImplementReducedWellSet)

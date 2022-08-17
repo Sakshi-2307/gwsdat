@@ -11,9 +11,10 @@
 plotTimeSeries <- function(csite, 
                            substance = NULL, 
                            location = NULL,
-                           show_thresh = FALSE
+                           show_thresh = FALSE,
+                           export = FALSE
                            ) {
-  
+
   showvline = FALSE
   op <- par(mfrow = c(length(substance),length(location)))
   
@@ -31,7 +32,9 @@ plotTimeSeries <- function(csite,
   #op <- par(new=TRUE)
 
   Well.Data <- csite$All.Data$Cont.Data[as.character(csite$All.Data$Cont.Data$WellName) %in% location & 
-  csite$All.Data$Cont.Data$Constituent %in% substance,]
+                                        csite$All.Data$Cont.Data$Constituent %in% substance,]
+
+  if (export == TRUE) return(Well.Data)
   
   #print(location)
   #print(substance)

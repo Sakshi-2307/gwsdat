@@ -16,8 +16,8 @@ uiTrendTable <- function(csite) {
                              radioButtons("trend_or_threshold", label = "Display Table",
                                           choices  = csite$ui_attr$trend_thresh_list, 
                                           selected = csite$ui_attr$trend_thresh_selected),
-                                          
-                             checkboxGroupInput("ts_true_options", label = "Time Series Plot Options", 
+                             # Time Series options to be copied from TS             
+                             checkboxGroupInput("ts_true_options2", label = "Time Series Plot Options", 
                                           choices = names(csite$ui_attr$ts_options),
                                           selected = names(which(csite$ui_attr$ts_options == TRUE)))
                              

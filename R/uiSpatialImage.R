@@ -58,7 +58,7 @@ uiSpatialImage <- function(csite, img_frmt) {
                                     ),
                                     
                                     div(style = "display: inline-block; vertical-align:top; margin-top: 25px; margin-right: 10px", 
-                                        downloadButton("save_spatial_plot", label = "Save Plot")
+                                        downloadButton("save_spatial_plot", label = "Export")
                                     ),
                                     if (existsPPT()) {
                                       div(id = "save_spatial_ppt_anim", style = "display: inline-block; vertical-align:top; margin-top: 25px;",
